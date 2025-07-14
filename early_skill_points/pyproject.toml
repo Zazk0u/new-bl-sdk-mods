@@ -1,0 +1,14 @@
+[project]
+name = "Early Skill Points"
+version = "1.00"
+authors = [{ name = "ZetaDaemon" }, { name = "Zazk0u27" }]
+description = """\
+Allow you to set the level at which you start gaining skills point. 
+Additionally, you can set the maximum level where you stop gaining them to offset early skill points gain.
+Note: skill points are generated when your character spawn, there is no risk of permanently losing them.
+"""
+
+[tool.sdkmod]
+name = "Early Skill Points"
+download = "https://raw.githubusercontent.com/Zazk0u/new-bl-sdk-mods/refs/heads/main/early_skill_points/early_skill_points.sdkmod"
+supported_games = ["BL2", "TPS"]
