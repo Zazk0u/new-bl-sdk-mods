@@ -14,7 +14,7 @@ Roll your mouse wheel to move the object toward/away from you.
 
 3:<br/>
 Press the pick up keybind again to release the object.<br/>
-Doing this will generate a log text file within object_relocator/logs containing informations on the object that was picked up.
+Doing this will generate a log text file within object_relocator/logs containing informations on the object that was picked up.<br/>
 You want to unzip the sdkmod folder to read the files.
 
 Logged informations:
@@ -28,4 +28,5 @@ Logged informations:
 
 Known limitations: 
 - Object might no longer pickable if broken, like a bullymong pile after being shot, this happen because the game designer set its collision to None, preventing traces function to affect it.
+
 
