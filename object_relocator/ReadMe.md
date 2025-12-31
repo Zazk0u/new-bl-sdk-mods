@@ -12,6 +12,7 @@ The object will now be held in front of you.
 Rotate the picked up object's Roll rotation by holding your Left/Right mouse. (you can edit which input rotate which axis in the mod settings)
 - hold Left Alt + Mouse to rotate the Yawn rotation instead.
 - hold Left Shift + Mouse to rotate the Pitch rotation instead.
+
 Roll your mouse wheel to move the object toward/away from you.
 
 3:
