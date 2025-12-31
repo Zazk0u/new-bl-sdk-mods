@@ -2,7 +2,7 @@ from __future__ import annotations  # Ensures type hints are ignored at runtime
 from typing import TYPE_CHECKING
 from pathlib import Path
 from datetime import datetime
-from unrealsdk import find_class
+from unrealsdk.logging import warning
 
 import os
 import sys
@@ -14,6 +14,10 @@ if TYPE_CHECKING:
 _folder_path = os.path.relpath(Path(__file__).parent / "logs", Path(sys.executable).parent)
 
 def write_object_infos_to_file(obj: WillowInteractiveObject, opportunity_point: PopulationOpportunity):
+    if not os.path.exists(_folder_path):
+        warning("[Object Relocator]: To create and read logs, export the sdkmod's folder.")
+        return
+    
     date = str(datetime.now()).replace(":", "-").replace(" ", "_").split(".")[0]
     path = f"{_folder_path}\log_{date}.txt"
     obj_location = str(obj.Location).replace(":", " =").replace("{", "(").replace("}", ")")
