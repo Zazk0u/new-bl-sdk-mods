@@ -15,7 +15,7 @@ Rotate the picked up object's Roll rotation by holding your Left/Right mouse. (y
 Roll your mouse wheel to move the object toward/away from you.
 
 3:
-Press the pick up keybind again to no longer hold the object.
+Press the pick up keybind again to release the object.
 Doing this will generate a log text file within object_relocator/logs containing informations on the object that was picked up.
 Logged informations:
 - Object's name
