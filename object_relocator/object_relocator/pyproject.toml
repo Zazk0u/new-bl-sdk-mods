@@ -1,0 +1,18 @@
+[project]
+name = "object_relocator"
+version = "1"
+authors = [{ name = "Zazk0u" }]
+description = """
+Tool to help with map editing. \n
+Pickup, move and rotate an interactive object (ie: containers, vending machine, exploding barrels, etc.), then release it to log its infos to a file in the mod folder.
+"""
+dependencies = [
+  "uemath >= 1.0",
+]
+
+[tool.sdkmod]
+license = {name = "GPL3", url = "https://choosealicense.com/licenses/gpl-3.0/" }
+name = "Object Relocator"
+download = "https://raw.githubusercontent.com/Zazk0u/new-bl-sdk-mods/refs/heads/main/object_relocator/object_relocator.sdkmod"
+version = "1"
+supported_games = ["BL2", "TPS"]
