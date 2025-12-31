@@ -1,3 +1,4 @@
+# Object Relocator
 Tool for editing map, allow you to pick up, move and rotate an interactive object.
 
 Requirements:
@@ -28,4 +29,5 @@ Logged informations:
 Know limitations: 
 - Object might no longer pickable if broken, like a bullymong pile after being shot, this happen because the game designer set its collision to None, preventing traces function to affect it.
 
-Version 1.0
+### v1.0
+Initial Release.
