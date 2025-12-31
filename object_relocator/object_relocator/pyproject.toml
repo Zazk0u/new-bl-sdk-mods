@@ -10,6 +10,9 @@ dependencies = [
   "uemath >= 1.0",
 ]
 
+[project.urls]
+Repository = "https://github.com/Zazk0u/new-bl-sdk-mods/tree/main/object_relocator"
+
 [tool.sdkmod]
 license = {name = "GPL3", url = "https://choosealicense.com/licenses/gpl-3.0/" }
 name = "Object Relocator"
