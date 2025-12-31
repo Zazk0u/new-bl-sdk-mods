@@ -4,8 +4,10 @@ Tool for editing map, allow you to pick up, move and rotate an interactive objec
 Requirements:
 https://bl-sdk.github.io/willow2-mod-db/mods/uemath/
 
+HOW TO USE:
+
 1:
-Activate the editor mode, then press the pick up object keybind while looking at an interactive object.
+Activate the editor mode, then press the pick up object keybind while looking at an interactive object.<br/>
 The object will now be held in front of you.
 
 2:
