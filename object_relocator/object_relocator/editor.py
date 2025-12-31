@@ -20,7 +20,8 @@ _editor_is_active: bool = False
 @hook("WillowGame.WillowPlayerController:WillowClientDisableLoadingMovie", Type.POST) 
 def _deactive_editor_on_map_change(this: WillowPlayerController, args: WillowPlayerController.WillowClientDisableLoadingMovie.args, ret: Any, func: BoundFunction) -> None:
     if is_editor_active():
-        _deativate_editor()
+        _set_current_player_pawn(None)
+        _set_editor_is_active(False)
 
 def toggle_editor():
     if not is_editor_active():
