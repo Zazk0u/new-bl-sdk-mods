@@ -19,5 +19,5 @@ HowToUse = "https://github.com/Zazk0u/new-bl-sdk-mods/blob/main/object_relocator
 license = {name = "GPL3", url = "https://choosealicense.com/licenses/gpl-3.0/" }
 name = "Object Relocator"
 download = "https://raw.githubusercontent.com/Zazk0u/new-bl-sdk-mods/refs/heads/main/object_relocator/object_relocator.sdkmod"
-version = "1"
+version = "1.2"
 supported_games = ["BL2", "TPS"]
