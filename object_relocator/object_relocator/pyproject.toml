@@ -1,6 +1,6 @@
 [project]
 name = "object_relocator"
-version = "1"
+version = "1.2"
 authors = [{ name = "Zazk0u" }]
 description = """
 Tool to help with map editing.\n
@@ -11,7 +11,8 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/Zazk0u/new-bl-sdk-mods/tree/main/object_relocator"
+Repository = "https://github.com/Zazk0u/new-bl-sdk-mods"
+Changelog = "https://github.com/Zazk0u/new-bl-sdk-mods/tree/main/object_relocator"
 HowToUse = "https://github.com/Zazk0u/new-bl-sdk-mods/blob/main/object_relocator/object_relocator/HOW_TO_USE.md"
 
 [tool.sdkmod]
