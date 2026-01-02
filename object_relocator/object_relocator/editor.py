@@ -14,7 +14,6 @@ if TYPE_CHECKING:
     from common import *
 
 ECollisionType: Actor.ECollisionType = find_enum("ECollisionType")
-EInstanceDataType: IInstanceData.EInstanceDataType = find_enum("EInstanceDataType")
 PRIMITIVE_COMPONENT: UClass = find_class("PrimitiveComponent")
 
 _current_player_pawn: WeakPointer[WillowPlayerPawn] = WeakPointer()
