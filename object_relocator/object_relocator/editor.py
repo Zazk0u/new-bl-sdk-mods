@@ -1,10 +1,11 @@
 from __future__ import annotations  # Ensures type hints are ignored at runtime
-from typing import TYPE_CHECKING, cast, List
+from typing import TYPE_CHECKING, cast, List, Any
 
 from unrealsdk import make_struct, find_all, find_enum, find_class
-from unrealsdk.unreal import WeakPointer, UClass
+from unrealsdk.unreal import WeakPointer, UClass, BoundFunction
 
-from mods_base import get_pc, SliderOption
+from mods_base import get_pc, SliderOption, hook
+from mods_base.hook import Type
 
 
 from object_relocator.options import editor_fly_speed
@@ -18,6 +19,11 @@ PRIMITIVE_COMPONENT: UClass = find_class("PrimitiveComponent")
 
 _current_player_pawn: WeakPointer[WillowPlayerPawn] = WeakPointer()
 _editor_is_active: bool = False
+
+@hook("WillowGame.WillowPlayerController:WillowClientDisableLoadingMovie", Type.POST) 
+def _reset_on_loading_game_session(obj:WillowPlayerController, _args:WillowPlayerController._WillowClientDisableLoadingMovie.args, _ret:Any, _func:BoundFunction) -> None:
+    _set_current_player_pawn(None)
+    _set_editor_is_active(False)
 
 def toggle_editor():
     if not is_editor_active():
@@ -109,7 +115,9 @@ def _set_editor_options_callbacks():
 def on_enabled():
     _set_keybinds_callbacks()
     _set_editor_options_callbacks()
+    _reset_on_loading_game_session.enable()
 
 def on_disabled():
+    _reset_on_loading_game_session.disable()
     if is_editor_active():
         _deativate_editor()
