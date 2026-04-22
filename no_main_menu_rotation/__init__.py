@@ -26,13 +26,10 @@ def _disable_main_menu_rotation():
 def _enable_main_menu_rotation():
     _set_input_time(0)
 
-@hook("WillowGame.FrontendGFxMovie:Start", Type.PRE)
-def disable_rotation_when_entering_main_menu(this:UObject, args:WrappedStruct, ret:Any, func:BoundFunction) -> None:
+@hook("WillowGame.FrontendGFxMovie:OnTick", Type.PRE)
+def disable_rotation_on_tick(this:UObject, args:WrappedStruct, ret:Any, func:BoundFunction) -> None:
     _disable_main_menu_rotation()
-
-@hook("WillowGame.WillowSeqAct_InterpMenu:InputAxis", Type.POST)
-def disable_rotation_after_manual_rotation_input(this:UObject, args:WrappedStruct, ret:Any, func:BoundFunction) -> None:
-    _disable_main_menu_rotation()
+    print("test")
  
 def enable():
     _disable_main_menu_rotation()
@@ -40,9 +37,4 @@ def enable():
 def disable():
     _enable_main_menu_rotation()
 
-hooks: List[HookType] = [
-    disable_rotation_when_entering_main_menu,
-    disable_rotation_after_manual_rotation_input,
-]
-
-build_mod(on_enable=enable, on_disable=disable, hooks=hooks)
+build_mod(on_enable=enable, on_disable=disable, hooks=[disable_rotation_on_tick])
