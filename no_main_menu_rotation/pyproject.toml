@@ -1,0 +1,17 @@
+[project]
+name = "no_main_menu_rotation"
+version = "1"
+authors = [{ name = "Zazk0u" }]
+description = """
+Disable the rotation in the main menu, for peoples with vertigo.\n
+"""
+
+[project.urls]
+Repository = "https://github.com/Zazk0u/new-bl-sdk-mods"
+Changelog = "https://github.com/Zazk0u/new-bl-sdk-mods/tree/main/no_menu_rotation"
+
+[tool.sdkmod]
+license = {name = "GPL3", url = "https://choosealicense.com/licenses/gpl-3.0/" }
+name = "No Main Menu Rotation"
+download = "https://raw.githubusercontent.com/Zazk0u/new-bl-sdk-mods/refs/heads/main/no_menu_rotation/no_menu_rotation.sdkmod"
+supported_games = ["BL2", "TPS"]
