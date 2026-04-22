@@ -29,7 +29,6 @@ def _enable_main_menu_rotation():
 @hook("WillowGame.FrontendGFxMovie:OnTick", Type.PRE)
 def disable_rotation_on_tick(this:UObject, args:WrappedStruct, ret:Any, func:BoundFunction) -> None:
     _disable_main_menu_rotation()
-    print("test")
  
 def enable():
     _disable_main_menu_rotation()
