@@ -1,0 +1,15 @@
+[project]
+name = "open_sesame"
+version = "1"
+authors = [{ name = "Zazk0u" }]
+description = """Make containers open automatically when damaged."""
+
+[project.urls]
+Repository = "https://github.com/Zazk0u/new-bl-sdk-mods"
+Changelog = "https://github.com/Zazk0u/new-bl-sdk-mods/tree/main/open_sesame"
+
+[tool.sdkmod]
+license = {name = "GPL3", url = "https://choosealicense.com/licenses/gpl-3.0/" }
+name = "Open Sesame"
+download = "https://raw.githubusercontent.com/Zazk0u/new-bl-sdk-mods/refs/heads/main/open_sesame/open_sesame.sdkmod"
+supported_games = ["BL2", "TPS"]
