@@ -1,1 +1,1 @@
-Make containers open automatically when damaged
+Make containers open automatically when damaged.
