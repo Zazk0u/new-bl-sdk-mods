@@ -3,10 +3,10 @@ name = "bpd_useful_commands"
 version = "1"
 authors = [{ name = "Zazk0u" }]
 description = """
-Utility mod for BPDs. \n
--Run custom BPD events from python with custom outputs.\n
--Converts VariableData's variable to another type, like a BVAR_Object to a BVAR_Vector.\n
--Debug print a BPD's variables using log_bpd/log_path_bpd.
+Utility library for BPDs. \n
+- Run custom BPD events from python with custom outputs.
+- Converts VariableData's variable to another type, like a BVAR_Object to a BVAR_Vector using the new convert_bpd_variable command.
+- Debug a BPD's VariableData using the new log_bpd / log_path_bpd commands on a live object to log all its variables in the console.
 """
 dependencies = [
   "command_extensions >= 3.0",
