@@ -22,7 +22,8 @@ from .modules.bpd_events import (
     make_object_param,
     make_vector_param,
     activate_bpd_event,
-    broadcast_bpd_event
+    broadcast_bpd_event,
+    notify_skills_event
 )
 
 from .modules.utils import (

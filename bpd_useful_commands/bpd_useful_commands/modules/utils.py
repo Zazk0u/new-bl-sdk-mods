@@ -91,9 +91,9 @@ def log_bpd(_:argparse.Namespace) -> None:
 def log_bpd_path(_:argparse.Namespace) -> None:
     """
     Commands:\n
-        log_bpd LiveObjectPathName
+        log_bpd_path LiveObjectPathName
         Exemple:
-            log_bpd BackBurner_P.TheWorld:PersistentLevel.WillowProjectile_0
+            log_bpd_path BackBurner_P.TheWorld:PersistentLevel.WillowProjectile_0
     """
     live_object: IBehaviorConsumer = find_object("Object", _.LiveObjectPathName)
     if live_object and live_object.Class._implements(IBEHAVIOR_CONSUMER_CLASS):
