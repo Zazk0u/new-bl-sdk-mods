@@ -21,7 +21,7 @@ _Log the registered skills event that you've set using the register_skills_event
 # New file commands:
 - `register_skills_event EventName SkillDefinition` <br/>
 IE:  `register_skills_event mOnDamagedEnemy GD_Globals.SkillDefinition_DamagedEnemy` <br/>
-_Register an event name for a SkillDefinition, allowing it to get notified by any notify_skills_event call that match the event name._
+_Register an event name for a SkillDefinition, allowing it to get notified by any notify_skills_event call from python that match the event name._
 
 - `convert_bpd_variable VariableTypeForConstructor VariableName BPDToEdit BehaviorSequenceIndexToEdit VariableDataIndexToEdit`<br/>
 IE:  `convert_bpd_variable vector HitLocation BehaviorProviderDefiniton'GD_Globals.SkillExemple:BehaviorProviderDefiniton_0' 0 7` <br/>
