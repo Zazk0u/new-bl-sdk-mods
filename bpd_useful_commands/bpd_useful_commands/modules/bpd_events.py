@@ -95,8 +95,8 @@ def notify_skills_event(controller:Controller, event_name:str, parameters:List[B
                 make_object_param(skill_instigator.Pawn),
                 make_object_param(damaged_instigator),
                 make_object_param(damaged_instigator.Pawn),
-                make_object_param(damage_dealt),
                 make_object_param(damage_causer),
+                make_float_param(damage_dealt),
                 make_vector_param(hit_location)
             ]
         notify_skills_event(controller, "mOnDamagedEnemy", parameters, [ESKillState.SKILL_Paused])\n
