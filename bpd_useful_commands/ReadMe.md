@@ -29,3 +29,6 @@ _Convert a BPD variable of a BPD Sequence VariableData array to another type._<b
 _This is usefull when you want to convert a BVAR_Object into a BVAR_Vector, it won't cause a game crash._<br/><br/>
 Here are the argument for the VariableTypeForConstructor, you really only care for vector and direction_vector:<br/>
 `object, bool, int, float, all_players, named_variable, vector, direction_vector`
+
+# Changelog:
+V1: Released.
