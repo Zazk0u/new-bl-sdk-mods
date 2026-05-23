@@ -5,5 +5,7 @@ Utility library for BPDs.
 - Debug a BPD's VariableData using the new log_bpd / log_path_bpd commands on a live object to log all its variables in the console.
 
 New commands:
-- log_bpd LiveObjectName           | log_bpd WillowProjectile_0
-- log_path_bpd LiveObjectPathName  | log_bpd_path BackBurner_P.TheWorld:PersistentLevel.WillowProjectile_0
+- log_bpd LiveObjectName <br/>
+IE:  log_bpd WillowProjectile_0
+- log_bpd_path LiveObjectPathName <br/>
+IE:  log_bpd_path BackBurner_P.TheWorld:PersistentLevel.WillowProjectile_0
