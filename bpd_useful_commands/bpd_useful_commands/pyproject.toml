@@ -1,0 +1,20 @@
+[project]
+name = "bpd_useful_commands"
+version = "1"
+authors = [{ name = "Zazk0u" }]
+description = """
+Utility mod for BPDs. \n
+-Run custom BPD events from python with the custom outputs.\n
+-Converts VariableData's variable to another type, like a BVAR_Object to a BVAR_Vector.\n
+-Debug print a BPD's variables using log_bpd/log_path_bpd.
+"""
+
+[project.urls]
+Repository = "https://github.com/Zazk0u/new-bl-sdk-mods"
+Changelog = "https://github.com/Zazk0u/new-bl-sdk-mods/tree/main/bpd_useful_commands"
+
+[tool.sdkmod]
+license = {name = "GPL3", url = "https://choosealicense.com/licenses/gpl-3.0/" }
+name = "BPD Useful Commands"
+download = "https://raw.githubusercontent.com/Zazk0u/new-bl-sdk-mods/refs/heads/main/bpd_useful_commands/bpd_useful_commands.sdkmod"
+supported_games = ["BL2", "TPS"]
