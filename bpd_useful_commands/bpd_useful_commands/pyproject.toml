@@ -8,6 +8,9 @@ Utility mod for BPDs. \n
 -Converts VariableData's variable to another type, like a BVAR_Object to a BVAR_Vector.\n
 -Debug print a BPD's variables using log_bpd/log_path_bpd.
 """
+dependencies = [
+  "command_extensions >= 3.0",
+]
 
 [project.urls]
 Repository = "https://github.com/Zazk0u/new-bl-sdk-mods"

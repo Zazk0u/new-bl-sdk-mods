@@ -2,24 +2,24 @@ from __future__ import annotations  # Ensures type hints are ignored at runtime
 from typing import TYPE_CHECKING, List, Dict
 import argparse
 
-from mods_base import command, ArgParseCommand
+from mods_base import ArgParseCommand
 
 from unrealsdk import find_class
 from unrealsdk.logging import error
 
+from command_extensions import register, command
 from command_extensions.builtins import obj_name_splitter, parse_object
 
 from .structs import BehaviorVariableValue, Vector
 from .utils import keep_alive, GEARBOX_GLOBALS
 
-
 if TYPE_CHECKING:
     from common import *
 
 
-SKILL_DEFINITION_CLASS: SkillDefinition = find_class("SkillDefinition").Class
+SKILL_DEFINITION_CLASS: SkillDefinition = find_class("SkillDefinition")
 
-_registered_skills_by_event_name: Dict[str, List[SkillDefinition]] = {}
+_registered_skill_definitions_by_event_name: Dict[str, List[SkillDefinition]] = {}
 
 
 def make_bool_param(value:bool=0):
@@ -100,7 +100,7 @@ def notify_skills_event(controller:Controller, event_name:str, parameters:List[B
                 make_vector_param(hit_location)
             ]
         notify_skills_event(controller, "mOnDamagedEnemy", parameters, [ESKillState.SKILL_Paused])\n
-    For performance reason, you must use the register_skills_event command to allow a SkillDefinition to get notified by notify_skills_event.
+    Warning: For performance reason, you must use the register_skills_event command to allow a SkillDefinition to get notified by notify_skills_event.
     """
 
     if not controller:
@@ -111,8 +111,8 @@ def notify_skills_event(controller:Controller, event_name:str, parameters:List[B
     if not skill_manager:
         return
     
-    for skill_def in _registered_skills_by_event_name.get(event_name, []):
-        skill = skill_manager.GetActiveSkillForInstigatorByDefinition(controller, skill_def)
+    for skill_definition in _registered_skill_definitions_by_event_name.get(event_name, []):
+        skill = skill_manager.GetActiveSkillForInstigatorByDefinition(controller, skill_definition)
         if not skill or (skill_states_to_ignore and skill.SkillState in skill_states_to_ignore):
             continue
 
@@ -139,15 +139,22 @@ def register_skills_event(args:argparse.Namespace) -> None:
         return
     
     keep_alive(skill_def)
-    skills_list = _registered_skills_by_event_name.get(args.EventName, [])
+    skills_list = _registered_skill_definitions_by_event_name.get(args.EventName, [])
     if skill_def not in skills_list:
         skills_list.append(skill_def)
-        _registered_skills_by_event_name[args.EventName] = skills_list
+        _registered_skill_definitions_by_event_name[args.EventName] = skills_list
 
 
+register(register_skills_event)
 register_skills_event.add_argument("EventName", help="The event name.")
 register_skills_event.add_argument("SkillDefinition", help="The SkillDefinition to notify.")
 
 
+@command(splitter=obj_name_splitter, description="Log the registered skills event to the console.")
+def log_registered_skills_event(args:argparse.Namespace) -> None:
+    for event in _registered_skill_definitions_by_event_name:
+        print(f"{event}: {_registered_skill_definitions_by_event_name[event]}")
+
+
 def get_bpd_event_commands() -> List[ArgParseCommand]:
-    return [register_skills_event]
+    return [register_skills_event, log_registered_skills_event]
