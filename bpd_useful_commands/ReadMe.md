@@ -33,7 +33,7 @@ Exemple:<br/>  convert_bpd_variable vector HitLocation BehaviorProviderDefiniton
 _Convert a BPD variable of a BPD Sequence VariableData array to another type._<br/>
 _This is usefull when you want to convert a BVAR_Object into a BVAR_Vector, it won't cause a game crash._
 
-here are the argument for the VariableTypeForConstructor, you really only care for vector and direction_vector:<br/>
+Here are the argument for the VariableTypeForConstructor, you really only care for vector and direction_vector:<br/>
 "object":            BVAR_Object <br/>
 "bool":              BVAR_Bool <br/>
 "int":               BVAR_Int <br/>
