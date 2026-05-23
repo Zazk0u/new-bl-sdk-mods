@@ -7,5 +7,6 @@ Utility library for BPDs.
 New commands:
 - log_bpd LiveObjectName <br/>
 IE:  log_bpd WillowProjectile_0
+
 - log_bpd_path LiveObjectPathName <br/>
 IE:  log_bpd_path BackBurner_P.TheWorld:PersistentLevel.WillowProjectile_0
