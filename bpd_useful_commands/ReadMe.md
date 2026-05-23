@@ -12,3 +12,6 @@ Log all the variables from the object's first registered BPD using the live obje
 - log_bpd_path LiveObjectPathName <br/>
 log_bpd_path BackBurner_P.TheWorld:PersistentLevel.WillowProjectile_0 <br/>
 Log all the variables from the object's first registered BPD using the live object's path name.
+
+- log_registered_skills_event <br/>
+Log the registered skills event that you've set using the register_skills_event command to the console.
