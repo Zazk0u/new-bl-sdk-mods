@@ -7,8 +7,8 @@ Utility library for BPDs.
 New commands:
 - log_bpd LiveObjectName <br/>
 log_bpd WillowProjectile_0 <br/>
-// Log all the variable from the live oject first registered BPD's VariableData using the live object's name.
+Log all the variables from the object's first registered BPD using the live object's name.
 
 - log_bpd_path LiveObjectPathName <br/>
 log_bpd_path BackBurner_P.TheWorld:PersistentLevel.WillowProjectile_0 <br/>
-// Log all the variable from the live oject first registered BPD's VariableData using the live object's path name.
+Log all the variables from the object's first registered BPD using the live object's path name.
