@@ -16,7 +16,7 @@ _Log all the variables from the object's first registered BPD using the live obj
 ![](https://github.com/Zazk0u/new-bl-sdk-mods/blob/main/bpd_useful_commands/bpd_useful_commands/exemples/log_bpd_exemple.png)
 
 - `log_registered_skills_event` <br/>
-_Log the registered skills event that you've set using the register_skills_event command to the console._
+_Log the registered skills event that you've set using the register_skills_event file command to the console._
 
 # New file commands:
 - `register_skills_event EventName SkillDefinition` <br/>
