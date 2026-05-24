@@ -33,6 +33,9 @@ Here the arguments for the VariableTypeForConstructor, you really only care for 
 # Troubleshooting:
 _Why log_bpd/log_bpd_path has empty variables or show me uncorrect variables._
 ![](https://github.com/Zazk0u/new-bl-sdk-mods/blob/main/bpd_useful_commands/WhyLogBPDNotWorkOnPawnOrWeapon.png)
+![](https://github.com/Zazk0u/new-bl-sdk-mods/blob/main/bpd_useful_commands/WhyLogBPDNotWorkOnPawnOrWeapon_2.png)
+![](https://github.com/Zazk0u/new-bl-sdk-mods/blob/main/bpd_useful_commands/WhyLogBPDNotWorkOnPawnOrWeapon_3.png)
+![](https://github.com/Zazk0u/new-bl-sdk-mods/blob/main/bpd_useful_commands/WhyLogBPDNotWorkOnPawnOrWeapon_4.png)
 
 # Changelog:
 V1: Released.
