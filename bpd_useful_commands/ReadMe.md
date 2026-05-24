@@ -30,5 +30,9 @@ _This is usefull when you want to convert a BVAR_Object into a BVAR_Vector, it w
 Here the arguments for the VariableTypeForConstructor, you really only care for vector and direction_vector:<br/>
 `object, bool, int, float, all_players, named_variable, vector, direction_vector`
 
+# Troubleshooting:
+_Why log_bpd/log_bpd_path has empty variables or show me uncorrect variables._
+![](https://github.com/Zazk0u/new-bl-sdk-mods/blob/main/bpd_useful_commands/WhyLogBPDNotWorkOnPawnOrWeapon.png)
+
 # Changelog:
 V1: Released.
