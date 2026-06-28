@@ -279,7 +279,8 @@ class PrimitiveComponentPickupManager(PickupManager, ABC):
 
     def collision_debug(self, start_trace: Object.Vector, impact_info: Actor.ImpactInfo) -> None:
         super().collision_debug(start_trace, impact_info)
-        print(f"Owner: {self.current_pickup().Owner}")
+        if self.current_pickup():
+            print(f"Owner: {self.current_pickup().Owner}")
 
 
     def _pickup(self, impact_info: Actor.ImpactInfo) -> None:
