@@ -6,7 +6,7 @@ description = """
 Tool to help with map editing.\n
 Pickup, move and rotate a static map object, then release it to log its infos to a file in the mod folder.\n
 The log contain the object's new location and rotation values.\n
-Additionally allow you to hotfixes StaticMeshCollectionActor's StaticMeshComponent.
+Additionally allow you to hotfixes StaticMeshCollectionActor's StaticMeshComponents.
 """
 dependencies = [
   "uemath >= 1.0",
