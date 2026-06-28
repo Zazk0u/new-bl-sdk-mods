@@ -18,12 +18,42 @@ from unrealsdk.unreal import WeakPointer, UClass
 
 from abc import ABC, abstractmethod
 
+
+import math
+
 if TYPE_CHECKING:
     from common import *
 
 
 ECollisionType: Actor.ECollisionType = find_enum("ECollisionType")
 FOLDER_PATH = os.path.relpath(Path(__file__).parent / "logs", Path(sys.executable).parent)
+
+
+def get_vector_as_string(vector: Object.Vector) -> str:
+    x = "{:.6f}".format(vector.X)
+    y = "{:.6f}".format(vector.Y)
+    z = "{:.6f}".format(vector.z)
+    return f"(X = {x}, Y = {y}, Z = {z})"
+
+
+def get_plane_as_string(plane: Object.Plane) -> str:
+    w = "{:.6f}".format(plane.W)
+    x = "{:.6f}".format(plane.X)
+    y = "{:.6f}".format(plane.Y)
+    z = "{:.6f}".format(plane.z)
+    return f"(W = {w}, X = {x}, Y = {y}, Z = {z})"
+
+
+def get_matrix_as_string(matrix: Object.Matrix) -> str:
+    x_plane = get_plane_as_string(matrix.XPlane)
+    y_plane = get_plane_as_string(matrix.YPlane)
+    z_plane = get_plane_as_string(matrix.ZPlane)
+    w_plane = get_plane_as_string(matrix.WPlane)
+    return f"(XPlane = {x_plane}, YPlane = {y_plane}, ZPlane = {z_plane}, WPlane = {w_plane})"
+
+
+def get_rotation_as_string(rotation: Object.Rotator) -> str:
+    return str(rotation).replace(":", " =").replace("{", "(").replace("}", ")")
 
 
 class PickupManager(ABC):
@@ -158,16 +188,16 @@ class ActorPickupManager(PickupManager, ABC):
 
 
     def _get_location(self) -> Object.Vector:
-        return self.current_pickup().Location
+        return self.current_pickup().Location   
 
 
     def _write_infos_to_file(self, file: TextIOWrapper):
         pickup = self.current_pickup()
         opportunity_point = self.opportunity_point()
 
-        obj_location = str(pickup.Location).replace(":", " =").replace("{", "(").replace("}", ")")
-        obj_rotation = str(pickup.Rotation).replace(":", " =").replace("{", "(").replace("}", ")")
-        
+        obj_location = get_vector_as_string(self._get_location())
+        obj_rotation = get_rotation_as_string(pickup.Rotation)
+
         file.write(f"Object:\n")
         file.write(f"{pickup}\n")
         file.write(f"\n")
@@ -301,6 +331,11 @@ class PrimitiveComponentPickupManager(PickupManager, ABC):
         pickup.ForceUpdate(False)
     
 
+    def _get_matrix(self) -> Object.Matrix:
+        pickup = self.current_pickup()
+        return pickup.CachedParentToWorld
+
+
     def _write_infos_to_file(self, file: TextIOWrapper):
         pickup = self.current_pickup()   
         file.write(f"Object:\n")
@@ -318,11 +353,10 @@ class ActorMeshCollectionPickupManager(PrimitiveComponentPickupManager):
 
     def _write_infos_to_file(self, file: TextIOWrapper):
         super()._write_infos_to_file(file)
+        pickup: PrimitiveComponent = self.current_pickup()
+        obj_location = get_matrix_as_string(self._get_matrix())
+        obj_rotation = get_rotation_as_string(pickup.Rotation)
 
-        pickup = self.current_pickup()
-        obj_location = str(pickup.CachedParentToWorld).replace(":", " =").replace("{", "(").replace("}", ")")
-        obj_rotation = str(pickup.Rotation).replace(":", " =").replace("{", "(").replace("}", ")")
-        
         file.write(f"""Commands: (CachedParentToWorld control the location)\n""")
         file.write(f"set {pickup} CachedParentToWorld {obj_location}\n")
         file.write(f"set {pickup} Rotation {obj_rotation}\n")
