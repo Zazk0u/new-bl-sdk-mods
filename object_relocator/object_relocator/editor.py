@@ -1,35 +1,48 @@
 from __future__ import annotations  # Ensures type hints are ignored at runtime
-from typing import TYPE_CHECKING, cast, List, Any
+from typing import TYPE_CHECKING, List, Any
 
-from unrealsdk import make_struct, find_all, find_enum, find_class
+from unrealsdk import make_struct, find_enum, find_class
 from unrealsdk.unreal import WeakPointer, UClass, BoundFunction
 
-from mods_base import get_pc, SliderOption, hook
+from mods_base import get_pc, hook
 from mods_base.hook import Type
-
-
-from object_relocator.options import editor_fly_speed
-from object_relocator.keybinds import editor
+from mods_base.options import BaseOption, SliderOption
+from mods_base.keybinds import KeybindType, EInputEvent
 
 if TYPE_CHECKING:
     from common import *
 
+PRIMITIVE_COMPONENT_CLASS: UClass = find_class("PrimitiveComponent")
 ECollisionType: Actor.ECollisionType = find_enum("ECollisionType")
-PRIMITIVE_COMPONENT: UClass = find_class("PrimitiveComponent")
 
 _current_player_pawn: WeakPointer[WillowPlayerPawn] = WeakPointer()
 _editor_is_active: bool = False
 
-@hook("WillowGame.WillowPlayerController:WillowClientDisableLoadingMovie", Type.POST) 
-def _reset_on_loading_game_session(obj:WillowPlayerController, _args:WillowPlayerController._WillowClientDisableLoadingMovie.args, _ret:Any, _func:BoundFunction) -> None:
-    _set_current_player_pawn(None)
-    _set_editor_is_active(False)
 
 def toggle_editor():
     if not is_editor_active():
         _activate_editor()
     else:
         _deativate_editor()
+
+
+def is_editor_active() -> bool:
+    return _editor_is_active
+
+
+def get_pawn_reference() -> WillowPlayerPawn:
+    return _current_player_pawn()
+
+
+def _set_current_player_pawn(pp: WillowPlayerPawn):
+    global _current_player_pawn
+    _current_player_pawn = WeakPointer(pp)
+
+
+def _set_editor_is_active(value: bool):
+    global _editor_is_active
+    _editor_is_active = value
+
 
 def _activate_editor():
     pc: WillowPlayerController = get_pc()
@@ -43,7 +56,8 @@ def _activate_editor():
     pawn.bCanTarget = False
     _set_current_player_pawn(pawn)
     _set_editor_is_active(True)
-    _change_the_collision_of_all_live_objects_to_allow_trace()
+
+
 
 def _deativate_editor():
     pawn = _current_player_pawn()
@@ -58,64 +72,38 @@ def _deativate_editor():
     pc.Possess(pawn, True)
     _set_current_player_pawn(None)
     _set_editor_is_active(False)
-    _reset_the_collision_of_all_live_objects()
 
-def _change_the_collision_of_all_live_objects_to_allow_trace():
-    for obj in cast("List[WillowInteractiveObject]", find_all("WillowInteractiveObject")):
-        if not (is_live_object := obj.WorldInfo and obj.AllComponents):
-            continue
 
-        obj.SetCollisionType(ECollisionType.COLLIDE_BlockAll)
-        obj.bBlockActors = True
-        for component in obj.AllComponents:
-            primitive_component: PrimitiveComponent = component
-            if primitive_component.Class._inherits(PRIMITIVE_COMPONENT):
-                primitive_component.BlockActors = True
-
-def _reset_the_collision_of_all_live_objects():
-    for obj in cast("List[WillowInteractiveObject]", find_all("WillowInteractiveObject")):
-        if not (is_live_object := obj.WorldInfo and obj.AllComponents):
-            continue
-
-        for instance_data in obj.InstanceState.Data:
-            collision_type = instance_data.ComponentData.CollisionType
-            component: PrimitiveComponent = instance_data.ComponentData.Component
-            if not component or not component.Class._inherits(PRIMITIVE_COMPONENT):
-                continue
-
-            if collision_type in [ECollisionType.COLLIDE_TouchAll, ECollisionType.COLLIDE_TouchAllButWeapons, ECollisionType.COLLIDE_TouchWeapons]:
-                component.BlockActors = False
-            else:
-                component.BlockActors = True
-
-def _set_current_player_pawn(pp: WillowPlayerPawn):
-    global _current_player_pawn
-    _current_player_pawn = WeakPointer(pp)
-
-def _set_editor_is_active(value: bool):
-    global _editor_is_active
-    _editor_is_active = value
-
-def is_editor_active() -> bool:
-    return _editor_is_active
-
-def get_pawn_reference() -> WillowPlayerPawn:
-    return _current_player_pawn()
-
-def _set_keybinds_callbacks():
-    editor.callback = toggle_editor
-
-def fly_speed_changed(slider: SliderOption, new_value: float):
+def _fly_speed_changed(slider: SliderOption, new_value: float):
     pc: WillowPlayerController = get_pc()
     pc.SpectatorCameraSpeed = new_value
 
-def _set_editor_options_callbacks():
-    editor_fly_speed.on_change = fly_speed_changed
+
+@hook("WillowGame.WillowPlayerController:WillowClientDisableLoadingMovie", Type.PRE) 
+def _reset_on_loading_game_session(obj:WillowPlayerController, _args:WillowPlayerController._WillowClientDisableLoadingMovie.args, _ret:Any, _func:BoundFunction) -> None:
+    _set_current_player_pawn(None)
+    _set_editor_is_active(False)
+
 ...
+editor_fly_speed = SliderOption("Editor fly speed", 2000, 1000, 10000, description="Speed at which you fly in editor mode.", on_change_anytime=_fly_speed_changed)
+
+
+all_options: List[BaseOption]  = [
+    editor_fly_speed,
+]
+
+
+editor = KeybindType("Toggle editor", "F3", event_filter=EInputEvent.IE_Pressed, callback=toggle_editor)
+
+
+all_keybinds: List[KeybindType]  = [
+    editor,
+]
+
+
 def on_enabled():
-    _set_keybinds_callbacks()
-    _set_editor_options_callbacks()
     _reset_on_loading_game_session.enable()
+
 
 def on_disabled():
     _reset_on_loading_game_session.disable()

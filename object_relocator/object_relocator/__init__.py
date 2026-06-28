@@ -1,49 +1,60 @@
 if True:
     assert __import__("mods_base").__version_info__ >= (1, 5), "Please update the SDK"
 
-import os
-import argparse
-import importlib
 import object_relocator.relocator as relocator
 import object_relocator.editor as editor
+import object_relocator.inputs as inputs
 
-from mods_base import build_mod, command
+from typing import TYPE_CHECKING, Any, List, cast
 
-from object_relocator.options import options
-from object_relocator.keybinds import keybinds
+from unrealsdk import find_all
+from unrealsdk.hooks import Type
+from unrealsdk.unreal import BoundFunction
 
-@command(description="Reload the modules that can be reloaded.")
-def reload_object_relocator_modules(_:argparse.Namespace):
-    _dir = os.path.dirname(__file__)
-    for file in os.listdir(_dir):
-        if not os.path.isfile(os.path.join(_dir, file)):
-            continue
+from mods_base import hook, HookType
+from mods_base import build_mod, Library, HookType
+from mods_base.options import BaseOption
+from mods_base.keybinds import KeybindType
 
-        # Specific files to ignores.
-        if file in ["__init__.py", "options.py", "keybinds.py"]:
-            continue
 
-        name, suffix = os.path.splitext(file)
-        # It's not a python file.
-        if suffix != ".py":
-            continue
-        
-        module = importlib.import_module("." + name, __name__)
+if TYPE_CHECKING:
+    from common import GameInfo
+    from common import StaticMeshCollectionActor
 
-        if hasattr(module, "on_disabled"):
-            module.on_disabled()
 
-        importlib.reload(module)
+## Normally its not possible to edit a StaticMeshCollectionActor's StaticMeshComponent with an hotfixes because you need to call ForceUpdate.
+## This hook update all StaticMeshCollectionActor on map change so it's now possible.
+@hook("Engine.GameInfo:PostCommitMapChange", Type.PRE)
+def update_all_static_mesh_actor_collection_on_map_change(this:GameInfo, args:GameInfo.PostCommitMapChange.args, ret:Any, func:BoundFunction) -> None:
+    for actor in cast("List[StaticMeshCollectionActor]", find_all("StaticMeshCollectionActor", True)):
+        if actor.Components:
+            actor.ForceUpdateComponents(True, False)
 
-        if hasattr(module, "on_enabled"):
-            module.on_enabled()
 
 def enable():
     relocator.on_enabled()
     editor.on_enabled()
 
+
 def disable():
     relocator.on_disabled()
     editor.on_disabled()
 
-build_mod(on_enable=enable, on_disable=disable, options=options, keybinds=keybinds)
+
+all_options: List[BaseOption] = []
+all_options.extend(editor.all_options)
+all_options.extend(relocator.all_options)
+
+all_keybinds: List[KeybindType] = []
+all_keybinds.extend(relocator.all_keybinds)
+all_keybinds.extend(editor.all_keybinds)
+all_keybinds.extend(inputs.all_keybinds)
+
+all_hooks: List[HookType] = [
+    update_all_static_mesh_actor_collection_on_map_change,
+]
+
+build_mod(cls=Library, on_enable=enable, on_disable=disable, options=all_options, keybinds=all_keybinds, hooks=all_hooks)
+
+# rlm object_relocator object_relocator.relocator object_relocator.pickup
+# rlm object_relocator.relocator object_relocator.pickup

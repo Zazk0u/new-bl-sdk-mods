@@ -14,20 +14,5 @@ Roll your mouse wheel to move the object toward/away from you.
 
 3:<br/>
 Press the pick up keybind again to release the object.<br/>
-Doing this will generate a log text file within object_relocator/logs containing informations on the object that was picked up.<br/>
+Doing this will generate a log text file within object_relocator/logs containing informations on the object that was picked up and its new location/rotation values.<br/>
 You want to export the sdkmod folder to read the logs.
-
-Logged informations:
-- Object's name
-- Object's definition
-- Object's opportunity point if it has one
-- Object's new location
-- Object's new rotation
-- Object's instance datas
-- Location/Rotation set commands for the Opportunity Point/Object, to use for text mods
-
-Known limitations: 
-- Object might no longer pickable if broken, like a bullymong pile after being shot, this happen because the game designer set its collision to None, preventing traces function to affect it.
-
-
-

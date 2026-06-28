@@ -1,14 +1,16 @@
 [project]
 name = "object_relocator"
-version = "1.2"
+version = "1.42"
 authors = [{ name = "Zazk0u" }]
 description = """
 Tool to help with map editing.\n
-Pickup, move and rotate an interactive object (ie: containers, vending machine, exploding barrels, etc.), then release it to log its infos to a file in the mod folder.
+Pickup, move and rotate a static map object, then release it to log its infos to a file in the mod folder.\n
+The log contain the object's new location and rotation values.
 """
 dependencies = [
   "uemath >= 1.0",
 ]
+
 
 [project.urls]
 Repository = "https://github.com/Zazk0u/new-bl-sdk-mods"
