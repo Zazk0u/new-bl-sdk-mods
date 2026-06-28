@@ -219,7 +219,8 @@ class WillowInteractiveObjectPickupManager(ActorPickupManager):
 
     def collision_debug(self, start_trace: Object.Vector, impact_info: Actor.ImpactInfo) -> None:
         super().collision_debug(start_trace, impact_info)
-        print(f"InteractiveObjectDefinition: {cast("WillowInteractiveObject", self.current_pickup()).InteractiveObjectDefinition}")
+        if self.current_pickup():
+            print(f"InteractiveObjectDefinition: {cast("WillowInteractiveObject", self.current_pickup()).InteractiveObjectDefinition}")
 
 
     def _write_infos_to_file(self, file: TextIOWrapper):
