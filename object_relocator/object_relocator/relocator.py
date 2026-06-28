@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 DegreeToURot: float = 182.044449
 EButtonState: WillowPlayerInput.EButtonState = find_enum("EButtonState")
 MinObjectDistanceAllowedFromCamera: float = 200
-MaxObjectDistanceAllowedFromCamera: float = 2000
+MaxObjectDistanceAllowedFromCamera: float = 3000
 MaxDistanceIncreaseMultiplier: float = 100
 DistanceIncreasePerMouseWheelInput: float = 5
 AdditionalTimeSecondsBeforeResetingDistanceIncreaseMultiplier: float = 0.5
@@ -166,7 +166,7 @@ def _reset_on_loading_game_session(obj:WillowPlayerController, _args:WillowPlaye
 
 ...
 debug_mode = BoolOption("Debug mode", False, description="Print debug messages and draw when attempting to pickup an object for better visualization.")
-pickup_max_range = SliderOption("Max pickup range", 2000, 200, 2000, description="The range at which you can pickup the object.")
+pickup_max_range = SliderOption("Max pickup range", MaxObjectDistanceAllowedFromCamera, MinObjectDistanceAllowedFromCamera, MaxObjectDistanceAllowedFromCamera, description="The range at which you can pickup the object.")
 mouse_rotation = SpinnerOption("Mouse rotation axis", "Roll", ["Pitch", "Yaw", "Roll"], description="Which of the object rotation axis is affected by holding the input.")
 alt_rotation = SpinnerOption("Left Alt rotation axis", "Yaw", ["Pitch", "Yaw", "Roll"], description="Which of the object rotation axis is affected by holding the input.")
 shift_rotation = SpinnerOption("Left Shift rotation axis", "Pitch", ["Pitch", "Yaw", "Roll"], description="Which of the object rotation axis is affected by holding the input.")
