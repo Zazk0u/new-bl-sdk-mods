@@ -311,7 +311,7 @@ class WillowInteractiveObjectPickupManager(ActorPickupManager):
                         comp.KillParticlesForced()
                         comp.ActivateSystem()
                             
-                    actor.ForceUpdateComponents(True, False)
+                actor.ForceUpdateComponents(True, False)
 
 
     def _write_infos_to_file(self, file: TextIOWrapper):
