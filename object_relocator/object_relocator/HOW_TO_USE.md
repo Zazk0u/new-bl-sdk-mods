@@ -45,4 +45,4 @@ Search for the closest ParticleSystemComponent and write its name to the console
 
 -`get_opportunity_points_in_radius`<br/>
 `get_opportunity_points_in_radius 300`<br/>
-Print all the StaticMeshComponPopulationOpportunity within radius of you, their distance and their PopulationDefinition to the console.<br/>
+Print all the PopulationOpportunity within radius of you, their distance and their PopulationDefinition to the console.<br/>
