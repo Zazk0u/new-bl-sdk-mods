@@ -2,7 +2,7 @@ Requirements:
 https://bl-sdk.github.io/willow2-mod-db/mods/uemath/
 
 1:<br/>
-Activate the editor mode, then press the pick up object keybind while looking at an interactive object.<br/>
+Activate the editor mode, then press the pick up object keybind while looking at an object.<br/>
 The object will now be held in front of you.
 
 2:<br/>
