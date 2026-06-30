@@ -392,6 +392,7 @@ class WillowPickupPickupManager(ActorPickupManager):
     def can_pickup(self, impact_info):
         return impact_info.HitActor and impact_info.HitActor.Class._inherits(find_class("WillowPickup"))
     
+    
     def drop(self):
         super().drop()
         self.base_WIO = WeakPointer()

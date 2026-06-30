@@ -42,3 +42,7 @@ Search for the closest StaticMeshComponent and write its name to the console inp
 
 -`get_closest_particle_component`<br/>
 Search for the closest ParticleSystemComponent and write its name to the console input, also print its template.<br/>
+
+-`get_opportunity_points_in_radius`<br/>
+`get_opportunity_points_in_radius 300`<br/>
+Print all the StaticMeshComponPopulationOpportunity within radius of you, their distance and their PopulationDefinition to the console.<br/>

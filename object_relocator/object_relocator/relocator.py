@@ -296,9 +296,56 @@ def get_closest_particle_component(args:argparse.Namespace) -> None:
         cast("WillowConsole", ENGINE.GetEngine().GameViewport.ViewportConsole).SetInputText(found_comp._path_name())
 
 
+@command(description="Print all the PopulationOpportunity in radius.")
+def get_opportunity_points_in_radius(args:argparse.Namespace) -> None:
+    pc: WillowPlayerController = get_pc()
+    if not pc:
+        return
+    
+    opportunity_points_by_distance: Dict[float, PopulationOpportunity] = {}
+    player_location = uemath.Vector(pc.Location if not pc.Pawn else pc.Pawn.location)
+    radius: float = float(args.Radius)
+
+    for opportunity_point in find_all("PopulationOpportunity", False):
+        opportunity_point: PopulationOpportunity = opportunity_point
+        distance = uemath.Vector(opportunity_point.Location).distance(player_location)
+        if distance <= radius:
+            opportunity_points_by_distance[distance] = opportunity_point
+    
+    sorted_list = sorted(opportunity_points_by_distance.items())
+    for key, value in sorted_list:
+        distance = "{:.6f}".format(key)
+        if value.Class._inherits(find_class("PopulationOpportunityArea")):
+            all_population_definitions: List[PopulationOpportunityArea.PopulationOptionAreaData] = []
+            for spawn_option in cast("PopulationOpportunityArea", value).SpawnOptions:
+                for pop_def in spawn_option.PopulationDefinitions:
+                    if pop_def.PopulationDef:
+                        all_population_definitions.append(pop_def.PopulationDef)
+
+            value = f"{value}   {all_population_definitions}"
+
+        elif value.Class._inherits(find_class("PopulationOpportunityCloner")):
+            value = f"{value}   {cast("PopulationOpportunityCloner", value).SpawnFactory}"
+
+        elif value.Class._inherits(find_class("PopulationOpportunityCombat")):
+            value = f"{value}   {cast("PopulationOpportunityCombat", value).PopulationDef}"
+
+        elif value.Class._inherits(find_class("PopulationOpportunityPoint")):
+            value = f"{value}   {cast("PopulationOpportunityPoint", value).PopulationDef}"
+
+        elif value.Class._inherits(find_class("PopulationOpportunityDen")):
+            value = f"{value}   {cast("PopulationOpportunityDen", value).PopulationDef}"
+
+        elif value.Class._inherits(find_class("PopulationOpportunityDen")):
+            value = f"{value}   {cast("PopulationOpportunityDen", value).PopulationDef}"
+        
+        print(f"{distance} {value}")
+
+
 get_mesh_components_in_radius.add_argument("Radius")
 get_particle_components_in_radius.add_argument("Radius")
 force_pickup.add_argument("PrimitiveComponentName")
+get_opportunity_points_in_radius.add_argument("Radius")
 
 
 ...
@@ -341,6 +388,7 @@ all_commands: List[ArgParseCommand]  = [
     get_particle_components_in_radius,
     get_closest_mesh_component,
     get_closest_particle_component,
+    get_opportunity_points_in_radius,
     force_pickup,
 ]
 
