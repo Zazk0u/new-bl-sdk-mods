@@ -1,19 +1,30 @@
 from __future__ import annotations  # Ensures type hints are ignored at runtime
-from typing import TYPE_CHECKING, Any, cast, List
-from mods_base import hook, get_pc
+from typing import TYPE_CHECKING, Any, cast, List, Callable, Dict
+
+from mods_base import hook, get_pc, ENGINE
 from mods_base.options import BaseOption, SliderOption, BoolOption, SpinnerOption
 from mods_base.keybinds import KeybindType, EInputEvent
+from mods_base.command import command, ArgParseCommand
 
-from unrealsdk import find_class, find_enum
+from unrealsdk import find_class, find_enum, find_all, make_struct, find_object
 from unrealsdk.hooks import Type
-from unrealsdk.unreal import BoundFunction
-from unrealsdk.unreal import IGNORE_STRUCT
+from unrealsdk.unreal import BoundFunction, IGNORE_STRUCT
 
 from .inputs import is_shift_enabled, is_alt_enabled
 from .editor import is_editor_active, get_pawn_reference
-from .pickup import PickupManager, WillowInteractiveObjectPickupManager, InterpActorPickupManager, ActorMeshCollectionPickupManager
+from .pickup import (
+    PickupManager, 
+    WillowInteractiveObjectPickupManager, 
+    InterpActorPickupManager, 
+    StaticMeshActorPickupManager, 
+    ActorMeshCollectionPickupManager, 
+    WillowPickupPickupManager, 
+    SkeletalMeshActorPickupManager, 
+    ForcePickupPrimitiveComponentPickupManager
+)
 
 import uemath
+import argparse
 
 if TYPE_CHECKING:
     from common import *
@@ -30,10 +41,30 @@ AdditionalTimeSecondsBeforeResetingDistanceIncreaseMultiplier: float = 0.5
 _last_distance_change_from_camera_time: float = 0
 _distance_from_camera_multiplier: float = 1
 
-_wio_pickup_manager: PickupManager = WillowInteractiveObjectPickupManager()
-_mesh_collection_pickup_manager: PickupManager = ActorMeshCollectionPickupManager()
-_interp_actor_collection_pickup_manager: PickupManager = InterpActorPickupManager()
-_current_pickup_manager: PickupManager = _wio_pickup_manager
+_all_standard_pickup_managers: List[PickupManager] = [
+    WillowInteractiveObjectPickupManager(),
+    ActorMeshCollectionPickupManager(),
+    InterpActorPickupManager(),
+    StaticMeshActorPickupManager(),
+    WillowPickupPickupManager(),
+    SkeletalMeshActorPickupManager()
+]
+
+_force_pickup_primitive_component_manager: ForcePickupPrimitiveComponentPickupManager = ForcePickupPrimitiveComponentPickupManager()
+
+_current_pickup_manager: PickupManager = _force_pickup_primitive_component_manager
+
+def notify_enter_editor():
+    _force_pickup_primitive_component_manager.on_enter_editor()
+    for manager in _all_standard_pickup_managers:
+        manager.on_enter_editor()
+
+
+def notify_exit_editor():
+    _force_pickup_primitive_component_manager.on_exit_editor()
+    for manager in _all_standard_pickup_managers:
+        manager.on_exit_editor()
+    _reset()
 
 
 def _do_pickup_object():
@@ -41,22 +72,23 @@ def _do_pickup_object():
         return
     
     if not _current_pickup_manager.has_pickup():
-        _try_to_pickup_object()
-        _update_current_pickup_manager.enable()
+        sucess = _try_to_pickup_object()
+        if sucess:
+            _update_current_pickup_manager.enable()
     else:
         _current_pickup_manager.write_infos_to_file()
         _current_pickup_manager.drop()
         _update_current_pickup_manager.disable()
 
 
-def _try_to_pickup_object():
+def _try_to_pickup_object() -> bool:
+    sucess = False
     weapon, destroy_spawned_weapon = _get_weapon()
     if not weapon:
-        return
+        return sucess
     
-    _wio_pickup_manager.on_pre_trace()
-    _mesh_collection_pickup_manager.on_pre_trace()
-    _interp_actor_collection_pickup_manager.on_pre_trace()
+    for manager in _all_standard_pickup_managers:
+        manager.on_pre_trace()
 
     pc: WillowPlayerController = get_pc()
     start_trace = pc.CalcViewLocation
@@ -64,19 +96,21 @@ def _try_to_pickup_object():
     end_trace = (uemath.Vector(start_trace) + (player_forward * pickup_max_range.value)).to_ue_vector()
     impact_info = weapon.CalcWeaponFire(start_trace, end_trace, [], IGNORE_STRUCT, True)[1][0]
     
-    _wio_pickup_manager.on_post_trace()
-    _mesh_collection_pickup_manager.on_post_trace()
-    _interp_actor_collection_pickup_manager.on_post_trace()
+    for manager in _all_standard_pickup_managers:
+        manager.on_post_trace()
     
     if _evaluate_pickup_manager(impact_info):
         _current_pickup_manager.distance_from_camera = uemath.Vector(pc.CalcViewLocation).distance(uemath.Vector(impact_info.HitLocation))
         _current_pickup_manager.pickup(impact_info)
+        sucess = True
 
     if debug_mode.value is True:
         _current_pickup_manager.collision_debug(start_trace, impact_info)
 
     if destroy_spawned_weapon:
         weapon.Destroy()
+    
+    return sucess
 
 
 def _get_weapon() -> tuple[WillowWeapon, bool]:
@@ -95,18 +129,10 @@ def _get_weapon() -> tuple[WillowWeapon, bool]:
 
 def _evaluate_pickup_manager(impact_info: Actor.ImpactInfo):
     global _current_pickup_manager
-    if _wio_pickup_manager.can_pickup(impact_info):
-        _current_pickup_manager = _wio_pickup_manager
-        return True
-
-    if _mesh_collection_pickup_manager.can_pickup(impact_info):
-        _current_pickup_manager = _mesh_collection_pickup_manager
-        return True
-    
-    if _interp_actor_collection_pickup_manager.can_pickup(impact_info):
-        _current_pickup_manager = _interp_actor_collection_pickup_manager
-        return True
-    
+    for manager in _all_standard_pickup_managers:
+        if manager.can_pickup(impact_info):
+            _current_pickup_manager = manager
+            return True
     return False
 
 
@@ -153,6 +179,53 @@ def _change_pickup_distance_from_camera(direction: int):
     _current_pickup_manager.distance_from_camera = min(max(_current_pickup_manager.distance_from_camera, MinObjectDistanceAllowedFromCamera), MaxObjectDistanceAllowedFromCamera)
 
 
+def _force_pickup_primitive_component(component: PrimitiveComponent):
+    global _current_pickup_manager
+    if not is_editor_active():
+        print("Must be in the editor!")
+        return
+
+    if _current_pickup_manager.has_pickup():
+        _current_pickup_manager.drop()
+    
+    if component.Owner:
+        _current_pickup_manager = _force_pickup_primitive_component_manager
+        smc_location = uemath.Vector(make_struct("Vector", X=component.CachedParentToWorld.WPlane.X, Y=component.CachedParentToWorld.WPlane.Y, Z=component.CachedParentToWorld.WPlane.Z))
+        _current_pickup_manager.distance_from_camera = uemath.Vector(cast("WillowPlayerController", get_pc()).CalcViewLocation).distance(smc_location)
+        _current_pickup_manager.force_pickup(component)
+        _update_current_pickup_manager.enable()
+
+
+def _for_all_primitive_component_in_radius(primitive_class: str, radius: float, callback: Callable[[PrimitiveComponent, float], None], condition: Callable[[PrimitiveComponent], bool] = None):
+    pc: WillowPlayerController = get_pc()
+    player_location = uemath.Vector(pc.Location if not pc.Pawn else pc.Pawn.Location)
+
+    for primitive in cast("List[StaticMeshComponent]", find_all(primitive_class, False)):
+        if not (is_live_object := primitive.Owner):
+            continue
+
+        primitive_location = uemath.Vector(make_struct("Vector", X=primitive.CachedParentToWorld.WPlane.X, Y=primitive.CachedParentToWorld.WPlane.Y, Z=primitive.CachedParentToWorld.WPlane.Z))
+        distance = primitive_location.distance(player_location)
+        if distance <= radius and (not condition or condition(primitive)):
+            callback(primitive, distance)
+
+
+def _get_closest_primitive_component(primitive_class: str, condition: Callable[[PrimitiveComponent], bool] = None) -> PrimitiveComponent:
+    closest_distance: float = 0
+    found_comp: StaticMeshComponent = None
+    def find_closest_primitive(primitive: PrimitiveComponent, distance: float):
+        nonlocal found_comp, closest_distance
+        if not found_comp:
+            found_comp = primitive
+            closest_distance = distance
+        elif distance < closest_distance:
+            found_comp = primitive
+            closest_distance = distance
+
+    _for_all_primitive_component_in_radius(primitive_class, 999999999999999999, find_closest_primitive, condition)
+    return found_comp
+
+
 @hook("WillowGame.WillowPlayerController:PlayerTick", Type.POST)
 def _update_current_pickup_manager(this: WillowPlayerController, args: WillowPlayerController.PlayerTick.args, ret: Any, func: BoundFunction) -> None:
     if _current_pickup_manager.has_pickup():
@@ -164,8 +237,72 @@ def _reset_on_loading_game_session(obj:WillowPlayerController, _args:WillowPlaye
     _reset()
 
 
+@command(description="Print all the live StaticMeshComponents in radius.")
+def get_mesh_components_in_radius(args:argparse.Namespace) -> None:
+    all_distance_by_mesh_component: Dict[StaticMeshComponent, float] = {}
+    def callback(comp: StaticMeshComponent, distance: float):
+        nonlocal all_distance_by_mesh_component
+        all_distance_by_mesh_component[comp] = distance
+    _for_all_primitive_component_in_radius("StaticMeshComponent", float(args.Radius), callback, lambda x: x and cast("StaticMeshComponent", x).StaticMesh)
+    for key in sorted(all_distance_by_mesh_component, key=all_distance_by_mesh_component.get):
+        distance = "{:.6f}".format(all_distance_by_mesh_component[key])
+        print(f"{distance}  {key}   {cast("StaticMeshComponent", key).StaticMesh}")
+
+
+@command(description="Print all the live ParticleSystemComponent in radius.")
+def get_particle_components_in_radius(args:argparse.Namespace) -> None:
+    all_distance_by_particle_component: Dict[ParticleSystemComponent, float] = {}
+    def callback(comp: ParticleSystemComponent, distance: float):
+        nonlocal all_distance_by_particle_component
+        all_distance_by_particle_component[comp] = distance
+    _for_all_primitive_component_in_radius("ParticleSystemComponent", float(args.Radius), callback, lambda x: x and cast("ParticleSystemComponent", x).Template)
+    for key in sorted(all_distance_by_particle_component, key=all_distance_by_particle_component.get):
+        distance = "{:.6f}".format(all_distance_by_particle_component[key])
+        print(f"{distance} {key}    {cast("ParticleSystemComponent", key).Template}")
+
+
+# force_pickup StaticMeshComponent'SouthpawFactory_P.TheWorld:PersistentLevel.StaticMeshCollectionActor_91.StaticMeshActor_SMC_500'
+# force_pickup ParticleSystemComponent'SouthpawFactory_P.TheWorld:PersistentLevel.Emitter_60.ParticleSystemComponent_139'
+@command(description="Force a StaticMeshComponent/ParticleSystemComponent to be pickup, mostly usefull if the trace can't affect it.")
+def force_pickup(args:argparse.Namespace) -> None:
+    primitive_name: str = args.PrimitiveComponentName
+    if primitive_name.startswith("ParticleSystemComponent"):
+        primitive_name = primitive_name.replace("ParticleSystemComponent", "")
+    elif primitive_name.startswith("StaticMeshComponent"):
+        primitive_name = primitive_name.replace("StaticMeshComponent", "")
+    
+    try:
+        primitive: PrimitiveComponent = find_object("PrimitiveComponent", primitive_name)
+    except:
+        return
+    
+    if primitive and (primitive.Class._inherits(find_class("StaticMeshComponent")) or primitive.Class._inherits(find_class("ParticleSystemComponent"))):
+        _force_pickup_primitive_component(primitive)
+
+
+@command(description="Write the closest StaticMeshComponents in the console input.")
+def get_closest_mesh_component(args:argparse.Namespace) -> None:
+    found_comp: StaticMeshComponent = _get_closest_primitive_component("StaticMeshComponent", lambda x: x and cast("StaticMeshComponent", x).StaticMesh)
+    if found_comp:
+        print(found_comp.StaticMesh)
+        cast("WillowConsole", ENGINE.GetEngine().GameViewport.ViewportConsole).SetInputText(found_comp._path_name())
+
+
+@command(description="Write the closest StaticMeshComponents in the console input.")
+def get_closest_particle_component(args:argparse.Namespace) -> None:
+    found_comp: ParticleSystemComponent = _get_closest_primitive_component("ParticleSystemComponent", lambda x: x and cast("ParticleSystemComponent", x).Template)
+    if found_comp:
+        print(found_comp.Template)
+        cast("WillowConsole", ENGINE.GetEngine().GameViewport.ViewportConsole).SetInputText(found_comp._path_name())
+
+
+get_mesh_components_in_radius.add_argument("Radius")
+get_particle_components_in_radius.add_argument("Radius")
+force_pickup.add_argument("PrimitiveComponentName")
+
+
 ...
-debug_mode = BoolOption("Debug mode", False, description="Print debug messages and draw when attempting to pickup an object for better visualization.")
+debug_mode = BoolOption("Debug mode", True, description="Print debug messages and draw when attempting to pickup an object for better visualization.")
 pickup_max_range = SliderOption("Max pickup range", MaxObjectDistanceAllowedFromCamera, MinObjectDistanceAllowedFromCamera, MaxObjectDistanceAllowedFromCamera, description="The range at which you can pickup the object.")
 mouse_rotation = SpinnerOption("Mouse rotation axis", "Roll", ["Pitch", "Yaw", "Roll"], description="Which of the object rotation axis is affected by holding the input.")
 alt_rotation = SpinnerOption("Left Alt rotation axis", "Yaw", ["Pitch", "Yaw", "Roll"], description="Which of the object rotation axis is affected by holding the input.")
@@ -189,13 +326,22 @@ rotate_object_decrease = KeybindType("Rotation decrease", "RightMouseButton", ev
 move_object_toward = KeybindType("Move toward", "MouseScrollDown", is_hidden=True, callback=lambda: _change_pickup_distance_from_camera(-1))
 move_object_away = KeybindType("Move away", "MouseScrollUp", is_hidden=True, callback=lambda: _change_pickup_distance_from_camera(1))
 
-
+## TODO: Add keybinds to scale the pickup.
 all_keybinds: List[KeybindType]  = [
     pickup_object,
     rotate_object_increase,
     rotate_object_decrease,
     move_object_toward,
     move_object_away,
+]
+
+
+all_commands: List[ArgParseCommand]  = [
+    get_mesh_components_in_radius,
+    get_particle_components_in_radius,
+    get_closest_mesh_component,
+    get_closest_particle_component,
+    force_pickup,
 ]
 
 

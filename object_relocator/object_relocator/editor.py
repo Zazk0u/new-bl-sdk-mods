@@ -45,6 +45,7 @@ def _set_editor_is_active(value: bool):
 
 
 def _activate_editor():
+    from .relocator import notify_enter_editor
     pc: WillowPlayerController = get_pc()
     pawn: WillowPlayerPawn = pc.Pawn
 
@@ -56,10 +57,12 @@ def _activate_editor():
     pawn.bCanTarget = False
     _set_current_player_pawn(pawn)
     _set_editor_is_active(True)
+    notify_enter_editor()
 
 
 
 def _deativate_editor():
+    from .relocator import notify_exit_editor
     pawn = _current_player_pawn()
     if not pawn:
         return
@@ -72,6 +75,7 @@ def _deativate_editor():
     pc.Possess(pawn, True)
     _set_current_player_pawn(None)
     _set_editor_is_active(False)
+    notify_exit_editor()
 
 
 def _fly_speed_changed(slider: SliderOption, new_value: float):

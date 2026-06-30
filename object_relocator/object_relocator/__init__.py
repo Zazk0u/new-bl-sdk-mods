@@ -15,19 +15,24 @@ from mods_base import hook, HookType
 from mods_base import build_mod, Library, HookType
 from mods_base.options import BaseOption
 from mods_base.keybinds import KeybindType
-
+from mods_base.command import ArgParseCommand
 
 if TYPE_CHECKING:
     from common import GameInfo
     from common import StaticMeshCollectionActor
+    from common import StaticMeshActorBase
 
 
-## Normally its not possible to edit a StaticMeshCollectionActor's StaticMeshComponent with an hotfixes because you need to call ForceUpdate.
+## Normally its not possible to edit a StaticMeshCollectionActor's StaticMeshComponent / StaticMeshActorBase with an hotfixes because you need to call ForceUpdate.
 ## This hook update all StaticMeshCollectionActor on map change so it's now possible.
 @hook("Engine.GameInfo:PostCommitMapChange", Type.PRE)
 def update_all_static_mesh_actor_collection_on_map_change(this:GameInfo, args:GameInfo.PostCommitMapChange.args, ret:Any, func:BoundFunction) -> None:
-    for actor in cast("List[StaticMeshCollectionActor]", find_all("StaticMeshCollectionActor", True)):
-        if actor.Components:
+    for actor in cast("List[StaticMeshCollectionActor]", find_all("StaticMeshCollectionActor", False)):
+        if actor.Components and actor.WorldInfo:
+            actor.ForceUpdateComponents(True, False)
+
+    for actor in cast("List[StaticMeshActorBase]", find_all("StaticMeshActorBase", False)):
+        if actor.Components and actor.WorldInfo:
             actor.ForceUpdateComponents(True, False)
 
 
@@ -50,11 +55,16 @@ all_keybinds.extend(relocator.all_keybinds)
 all_keybinds.extend(editor.all_keybinds)
 all_keybinds.extend(inputs.all_keybinds)
 
+
+all_commands: List[ArgParseCommand] = []
+all_commands.extend(relocator.all_commands)
+
+
 all_hooks: List[HookType] = [
     update_all_static_mesh_actor_collection_on_map_change,
 ]
 
-build_mod(cls=Library, on_enable=enable, on_disable=disable, options=all_options, keybinds=all_keybinds, hooks=all_hooks)
+build_mod(cls=Library, on_enable=enable, on_disable=disable, options=all_options, keybinds=all_keybinds, commands=all_commands, hooks=all_hooks)
 
 # rlm object_relocator object_relocator.relocator object_relocator.pickup
 # rlm object_relocator.relocator object_relocator.pickup

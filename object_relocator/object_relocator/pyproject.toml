@@ -6,7 +6,9 @@ description = """
 Tool to help with map editing.\n
 Pickup, move and rotate a static map object, then release it to log its infos to a file in the mod folder.\n
 The log contain the object's new location and rotation values.\n
-Additionally allow you to hotfixes StaticMeshCollectionActor's StaticMeshComponents.
+Allow blcm hotfixes to modify StaticMeshCollectionActor's StaticMeshComponents / StaticMeshActor.\n
+Added new console commands (check out HOW_TO_USE.md).
+
 """
 dependencies = [
   "uemath >= 1.0",
