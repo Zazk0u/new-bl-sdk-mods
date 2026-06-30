@@ -359,7 +359,6 @@ class StaticMeshActorPickupManager(ActorPickupManager):
         super()._write_infos_to_file(file)
         file.write(f"""Notes:\n""")
         file.write(f"""### Those hotfixes only work because of Object Relocator force updating all StaticMeshActor on level change, if you use them for your overhaul mod, you need to add Object Relocator to the list of dependencies.\n""")
-        file.write(f"""### CachedParentToWorld's WPlane control the location.\n""")
         file.write(f"""\n""")
 
 
