@@ -1,7 +1,7 @@
 from __future__ import annotations  # Ensures type hints are ignored at runtime
 from typing import TYPE_CHECKING, Any, cast, List, Callable, Dict
 
-from mods_base import hook, get_pc, ENGINE
+from mods_base import hook, get_pc, ENGINE, HookType
 from mods_base.options import BaseOption, SliderOption, BoolOption, SpinnerOption
 from mods_base.keybinds import KeybindType, EInputEvent
 from mods_base.command import command, ArgParseCommand
@@ -237,6 +237,12 @@ def _reset_on_loading_game_session(obj:WillowPlayerController, _args:WillowPlaye
     _reset()
 
 
+@hook("Engine.GameInfo:PostCommitMapChange", Type.PRE)
+def notify_all_pickup_managers_of_map_change(this:GameInfo, args:GameInfo.PostCommitMapChange.args, ret:Any, func:BoundFunction) -> None:
+    for pickup_manager in _all_standard_pickup_managers:
+        pickup_manager.on_map_change(this.WorldInfo.GetMapName(True))
+
+
 @command(description="Print all the live StaticMeshComponents in radius.")
 def get_mesh_components_in_radius(args:argparse.Namespace) -> None:
     all_distance_by_mesh_component: Dict[StaticMeshComponent, float] = {}
@@ -390,6 +396,11 @@ all_commands: List[ArgParseCommand]  = [
     get_closest_particle_component,
     get_opportunity_points_in_radius,
     force_pickup,
+]
+
+
+all_hooks: List[HookType]  = [
+    notify_all_pickup_managers_of_map_change,
 ]
 
 

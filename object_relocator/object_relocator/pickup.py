@@ -125,6 +125,10 @@ class PickupManager(ABC):
         pass
 
 
+    def on_map_change(self, map_name: str) -> None:
+        pass
+
+
     def write_infos_to_file(self):
         if not os.path.exists(FOLDER_PATH):
             warning("[Object Relocator]: To create and read logs, export the sdkmod's folder.")
@@ -295,6 +299,19 @@ class WillowInteractiveObjectPickupManager(ActorPickupManager):
         super().collision_debug(start_trace, impact_info)
         if self.current_pickup():
             print(f"InteractiveObjectDefinition: {cast("WillowInteractiveObject", self.current_pickup()).InteractiveObjectDefinition}")
+        
+    
+    ## Normally its not possible to edit with an hotfixes because you need to call ForceUpdate, this fix that.
+    def on_map_change(self, map_name):
+        for actor in cast("List[WillowInteractiveObject]", find_all("WillowInteractiveObject", False)):
+            if actor.Components and actor.WorldInfo:
+                for comp in actor.AllComponents:
+                    if comp.Class._inherits(PARTICLE_SYSTEM_COMPONENT_CLASS):  
+                        comp: ParticleSystemComponent = comp
+                        comp.KillParticlesForced()
+                        comp.ActivateSystem()
+                            
+                    actor.ForceUpdateComponents(True, False)
 
 
     def _write_infos_to_file(self, file: TextIOWrapper):
@@ -319,6 +336,13 @@ class InterpActorPickupManager(ActorPickupManager):
         pickup = self.current_pickup()
         print(pickup)
         print(pickup.Location)
+
+
+    ## Normally its not possible to edit with an hotfixes because you need to call ForceUpdate, this fix that.
+    def on_map_change(self, map_name):
+        for actor in cast("List[InterpActor]", find_all("InterpActor", False)):
+            if actor.Components and actor.WorldInfo:
+                actor.ForceUpdateComponents(True, False)
 
 
     def _pickup(self, impact_info: Actor.ImpactInfo):
@@ -348,6 +372,13 @@ class StaticMeshActorPickupManager(ActorPickupManager):
     def on_enter_editor(self):
         change_the_collision_of_all_live_actor_to_allow_trace("StaticMeshActor", False)
 
+    
+    ## Normally its not possible to edit with an hotfixes because you need to call ForceUpdate, this fix that.
+    def on_map_change(self, map_name):
+        for actor in cast("List[StaticMeshActorBase]", find_all("StaticMeshActorBase", False)):
+            if actor.Components and actor.WorldInfo:
+                actor.ForceUpdateComponents(True, False)
+
 
     def _write_infos_to_file(self, file: TextIOWrapper):
         try:
@@ -369,6 +400,13 @@ class SkeletalMeshActorPickupManager(ActorPickupManager):
 
     def on_enter_editor(self):
         change_the_collision_of_all_live_actor_to_allow_trace("SkeletalMeshActor", False)
+
+    
+    ## Normally its not possible to edit with an hotfixes because you need to call ForceUpdate, this fix that.
+    def on_map_change(self, map_name):
+        for actor in cast("List[SkeletalMeshActor]", find_all("SkeletalMeshActor", False)):
+            if actor.Components and actor.WorldInfo:
+                actor.ForceUpdateComponents(True, False)
 
 
     def _write_infos_to_file(self, file: TextIOWrapper):
@@ -410,6 +448,13 @@ class WillowPickupPickupManager(ActorPickupManager):
         if base:
             print(f"Base: {base}")
             print(f"Base's InteractiveObjectDefinition: {base.InteractiveObjectDefinition}")
+
+    
+    ## Normally its not possible to edit with an hotfixes because you need to call ForceUpdate, this fix that.
+    def on_map_change(self, map_name):
+        for actor in cast("List[WillowPickup]", find_all("WillowPickup", False)):
+            if actor.Components and actor.WorldInfo:
+                actor.ForceUpdateComponents(True, False)
 
 
     def _write_infos_to_file(self, file: TextIOWrapper):
@@ -503,6 +548,12 @@ class ActorMeshCollectionPickupManager(PrimitiveComponentPickupManager):
 
     def on_enter_editor(self):
         change_the_collision_of_all_live_actor_to_allow_trace("StaticMeshCollectionActor", False)
+    
+    ## Normally its not possible to edit with an hotfixes because you need to call ForceUpdate, this fix that.
+    def on_map_change(self, map_name):
+        for actor in cast("List[StaticMeshCollectionActor]", find_all("StaticMeshCollectionActor", False)):
+            if actor.Components and actor.WorldInfo:
+                actor.ForceUpdateComponents(True, False)
 
 
     def _write_infos_to_file(self, file: TextIOWrapper):
