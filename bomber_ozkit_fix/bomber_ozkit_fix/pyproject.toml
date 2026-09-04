@@ -1,0 +1,15 @@
+[project]
+name = "bomber_ozkit_fix"
+version = "1"
+authors = [{ name = "Zazk0u" }]
+description = """Fix grenade throw skills that broke the bomber ozkit's free grenade effect."""
+
+[project.urls]
+Repository = "https://github.com/Zazk0u/new-bl-sdk-mods"
+Changelog = "https://github.com/Zazk0u/new-bl-sdk-mods/tree/main/bomber_ozkit_fix"
+
+[tool.sdkmod]
+license = {name = "GPL3", url = "https://choosealicense.com/licenses/gpl-3.0/" }
+name = "Bomber Ozkit Fix"
+download = "https://raw.githubusercontent.com/Zazk0u/new-bl-sdk-mods/refs/heads/main/bomber_ozkit_fix/bomber_ozkit_fix.sdkmod"
+supported_games = ["TPS"]
