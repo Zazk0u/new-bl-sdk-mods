@@ -1,1 +1,1 @@
-Fix grenade throw skills
+Fix grenade throw skills breaking the bomber ozkit free grenade chance effect.
