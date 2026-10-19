@@ -11,8 +11,10 @@ def evalue_le_content_web():
     if not content_du_web:
         return
     
+    sdk_fichier = str(Path(sys.executable).parent.parent.parent) + "\sdk_mods"
+    print(sdk_fichier)
     for content in content_du_web:
-        location_du_content = str((Path(__file__).parent.parent / str(content), Path(sys.executable).parent.parent)[0])
+        location_du_content = sdk_fichier + "/" + str(content)
         if os.path.exists(location_du_content) or os.path.exists(location_du_content + ".sdkmod") or os.path.exists(location_du_content + ".zip"):
             print(f"The author of this mod '{content}' support/used generative AI, i will not allow my mod to be compatible with it.")
             print(f"If you support generative AI, the feeding of codes stolen from hard working programmers to an AI, datacenters and fascist corporations: Go fuck yourself.")
