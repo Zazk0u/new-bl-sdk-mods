@@ -1,1 +1,1 @@
-If you support generative ai, code stealing from hard working programmers like they're your guinea pigs, datacenters and fascist corporations: Go fuck yourself.
+If you support generative AI, the feeding of codes stolen from hard working programmers to an AI, datacenters and fascist corporations: Go fuck yourself.
