@@ -12,7 +12,6 @@ def evalue_le_content_web():
         return
     
     sdk_fichier = str(Path(sys.executable).parent.parent.parent) + "\sdk_mods"
-    print(sdk_fichier)
     for content in content_du_web:
         location_du_content = sdk_fichier + "/" + str(content)
         if os.path.exists(location_du_content) or os.path.exists(location_du_content + ".sdkmod") or os.path.exists(location_du_content + ".zip"):
